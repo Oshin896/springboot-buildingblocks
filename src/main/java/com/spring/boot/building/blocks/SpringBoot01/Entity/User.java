@@ -1,6 +1,9 @@
 package com.spring.boot.building.blocks.SpringBoot01.Entity;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "UserEntity")
@@ -10,8 +13,10 @@ public class User {
     @Column(name = "id")
     private Long id;
     @Column(name = "user_name",length = 50,nullable = false,unique = true)
+    @NotEmpty(message = "Username is mandatory field. Please enter username")
     private String username;
     @Column(name = "first_name",length = 50,nullable = false)
+    @Size(min = 2,message = "First name should be atleast 2 characters long")
     private String firstName;
     @Column(name="last_name",length = 50,nullable = false)
     private String lastName;

@@ -8,14 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 
-@RestController("/")
+@RestController
+@Validated
 public class UserController {
     @Autowired
     private UserService user;
@@ -25,7 +29,7 @@ public class UserController {
         return user.getAllUsers();
     }
     @PostMapping("/users")
-    public ResponseEntity<Void> createUser(@RequestBody User user1, UriComponentsBuilder builder){
+    public ResponseEntity<Void> createUser(@Valid @RequestBody User user1, UriComponentsBuilder builder){
         try {
              user.createUser(user1);
             HttpHeaders httpHeaders=new HttpHeaders();
@@ -37,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUserById(@PathVariable("id") long id){
+    public Optional<User> getUserById(@PathVariable("id") @Min(1) long id){
         try {
             return user.getUserById(id);
         }catch (UserNotFoundException uex){
@@ -59,7 +63,11 @@ public class UserController {
     }
 
     @GetMapping("/users/username/{username}")
-    public User getUserByUserName(@PathVariable("username") String username){
-        return user.findByUserName(username);
+    public User getUserByUserName(@PathVariable("username") String username) throws UserNotFoundException {
+        User user1=user.findByUserName(username);
+        if(user1==null)
+            throw new UserNotFoundException("User does not exists by username:"+username);
+        return user1;
     }
+
 }
