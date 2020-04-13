@@ -1,6 +1,7 @@
 package com.spring.boot.building.blocks.SpringBoot01.Controller;
 
 
+import com.spring.boot.building.blocks.SpringBoot01.DTO.OrderRequestDTO;
 import com.spring.boot.building.blocks.SpringBoot01.Entity.Order;
 import com.spring.boot.building.blocks.SpringBoot01.Entity.User;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.OrderNotFoundException;
@@ -35,14 +36,16 @@ public class OrderController {
     }
 
     @PostMapping("/{userid}/orders")
-    public void createOrder(@PathVariable Long userid, @RequestBody Order order) {
+    public void createOrder(@PathVariable Long userid, @RequestBody OrderRequestDTO orderRequestDTO) {
         Optional<User> userOptional=userRepository.findById(userid);
         if(!userOptional.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
 
         }
+        Order order=new Order();
         User user= userOptional.get();
         order.setUser(user);
+        order.setOrderdescription(orderRequestDTO.getOrderdescription());
         orderRepository.save(order);
     }
 

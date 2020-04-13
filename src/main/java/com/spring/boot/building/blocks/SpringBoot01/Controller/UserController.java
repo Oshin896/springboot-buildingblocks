@@ -1,10 +1,12 @@
 package com.spring.boot.building.blocks.SpringBoot01.Controller;
 
+import com.spring.boot.building.blocks.SpringBoot01.DTO.UserRequestDTO;
 import com.spring.boot.building.blocks.SpringBoot01.Entity.User;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserExistsException;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserNotFoundException;
 import com.spring.boot.building.blocks.SpringBoot01.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,11 @@ import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 
+
 @RestController
 @Validated
 @RequestMapping(value = "/users")
-public class UserController {
+public class UserController extends RepresentationModel {
     @Autowired
     private UserService user;
 
@@ -30,11 +33,11 @@ public class UserController {
         return user.getAllUsers();
     }
     @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody User user1, UriComponentsBuilder builder){
+    public ResponseEntity<Void> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO, UriComponentsBuilder builder){
         try {
-             user.createUser(user1);
+            User u= user.createUser(userRequestDTO);
             HttpHeaders httpHeaders=new HttpHeaders();
-            httpHeaders.setLocation(builder.path("/users/{id}").buildAndExpand(user1.getId()).toUri());
+            httpHeaders.setLocation(builder.path("/users/{id}").buildAndExpand(u.getId()).toUri());
             return new ResponseEntity<Void>(httpHeaders,HttpStatus.CREATED);
         } catch (UserExistsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
@@ -50,10 +53,10 @@ public class UserController {
         }
     }
     @PutMapping("/{id}")
-    public User updateUserById(@RequestBody User u, @PathVariable("id")long id)
+    public User updateUserById(@RequestBody UserRequestDTO userRequestDTO, @PathVariable("id")long id)
     {
         try {
-            return user.updateUserById(id,u);
+            return user.updateUserById(id,userRequestDTO);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
