@@ -1,5 +1,8 @@
 package com.spring.boot.building.blocks.SpringBoot01.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -10,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "UserEntity")
+//@JsonIgnoreProperties({"firstName","lastName"})--Static filtering JsonIgnore
+@JsonFilter(value = "userFilter")
 public class User extends RepresentationModel<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +33,7 @@ public class User extends RepresentationModel<User> {
     @Column(name = "role",length = 50,nullable = false)
     private String role;
     @Column(name = "ssn",length = 50,nullable = false,unique = true)
+    //@JsonIgnore--static filtering @JsonIgnore
     private String ssn;
 
     @OneToMany(mappedBy = "user")
