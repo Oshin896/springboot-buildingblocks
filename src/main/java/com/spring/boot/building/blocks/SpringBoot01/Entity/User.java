@@ -3,6 +3,7 @@ package com.spring.boot.building.blocks.SpringBoot01.Entity;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -14,29 +15,37 @@ import java.util.List;
 @Entity
 @Table(name = "UserEntity")
 //@JsonIgnoreProperties({"firstName","lastName"})--Static filtering JsonIgnore
-@JsonFilter(value = "userFilter")
+//@JsonFilter(value = "userFilter")--used for MappingJacksonValue filtering
 public class User extends RepresentationModel<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonView(View.External.class)
     private Long id;
     @Column(name = "user_name",length = 50,nullable = false,unique = true)
     @NotEmpty(message = "Username is mandatory field. Please enter username")
+    @JsonView(View.External.class)
     private String username;
     @Column(name = "first_name",length = 50,nullable = false)
     @Size(min = 2,message = "First name should be atleast 2 characters long")
+    @JsonView(View.External.class)
     private String firstName;
     @Column(name="last_name",length = 50,nullable = false)
+    @JsonView(View.External.class)
     private String lastName;
     @Column(name="email",length = 50,nullable = false)
+    @JsonView(View.External.class)
     private String email;
     @Column(name = "role",length = 50,nullable = false)
+    @JsonView(View.Internal.class)
     private String role;
     @Column(name = "ssn",length = 50,nullable = false,unique = true)
     //@JsonIgnore--static filtering @JsonIgnore
+    @JsonView(View.Internal.class)
     private String ssn;
 
     @OneToMany(mappedBy = "user")
+    @JsonView(View.Internal.class)
     private List<Order> orders;
 
     public User() {
