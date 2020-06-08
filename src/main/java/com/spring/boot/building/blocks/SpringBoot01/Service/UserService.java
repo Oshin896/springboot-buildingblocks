@@ -5,7 +5,8 @@ import com.spring.boot.building.blocks.SpringBoot01.DTO.UserRequestDTO;
 import com.spring.boot.building.blocks.SpringBoot01.Entity.User;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserExistsException;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserNotFoundException;
-import com.spring.boot.building.blocks.SpringBoot01.Mapper.UserMapper;
+
+import com.spring.boot.building.blocks.SpringBoot01.Mapper.UserMappers;
 import com.spring.boot.building.blocks.SpringBoot01.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class UserService {
     @Autowired
    private UserRepository userRepo;
     @Autowired
-    private UserMapper userMapper;
+    private UserMappers userMapper;
 
     public List<User> getAllUsers(){
         return userRepo.findAll();
