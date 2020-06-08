@@ -48,16 +48,29 @@ public class User extends RepresentationModel<User> {
     @JsonView(View.Internal.class)
     private List<Order> orders;
 
-    public User() {
-    }
+    @Column(name = "address")
+    private String address;
 
-    public User(String username, String firstName, String lastName, String email, String role, String ssn) {
+    public User(@NotEmpty(message = "Username is mandatory field. Please enter username") String username, @Size(min = 2, message = "First name should be atleast 2 characters long") String firstName, String lastName, String email, String role, String ssn, List<Order> orders, String address) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
         this.ssn = ssn;
+        this.orders = orders;
+        this.address = address;
+    }
+
+    public User() {
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Long getId() {
