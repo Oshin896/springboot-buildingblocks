@@ -5,6 +5,9 @@ import com.spring.boot.building.blocks.SpringBoot01.Entity.User;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserExistsException;
 import com.spring.boot.building.blocks.SpringBoot01.Exception.UserNotFoundException;
 import com.spring.boot.building.blocks.SpringBoot01.Service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
@@ -24,16 +27,19 @@ import java.util.Optional;
 @RestController
 @Validated
 @RequestMapping(value = "/users")
+@Api(tags = "User Manangement Rest Service", value = "UserController",description = "Controller for user mgt")
 public class UserController extends RepresentationModel {
     @Autowired
     private UserService user;
 
     @GetMapping
+    @ApiOperation(value ="retrieve list of users" )
     public List<User> getAllUsers(){
         return user.getAllUsers();
     }
     @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO, UriComponentsBuilder builder){
+    @ApiOperation(value ="create new users" )
+    public ResponseEntity<Void> createUser(@ApiParam("User information for a new user to be created.")@Valid @RequestBody UserRequestDTO userRequestDTO, UriComponentsBuilder builder){
         try {
             User u= user.createUser(userRequestDTO);
             HttpHeaders httpHeaders=new HttpHeaders();
@@ -45,12 +51,12 @@ public class UserController extends RepresentationModel {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable("id") @Min(1) long id){
-        try {
-            return user.getUserById(id);
-        }catch (UserNotFoundException uex){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,uex.getMessage());
-        }
+    public User getUserById(@PathVariable("id") @Min(1) long id) throws UserNotFoundException {
+
+            Optional<User> userOptional= user.getUserById(id);
+            if(!userOptional.isPresent())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return userOptional.get();
     }
     @PutMapping("/{id}")
     public User updateUserById(@RequestBody UserRequestDTO userRequestDTO, @PathVariable("id")long id)
@@ -62,8 +68,12 @@ public class UserController extends RepresentationModel {
         }
     }
     @DeleteMapping("/{id}")
-    public Optional<User> deleteUserById(@PathVariable("id")long id){
-       return user.deleteUserById(id);
+    public User deleteUserById(@PathVariable("id")long id)
+    {
+       Optional<User> optionalUser= user.deleteUserById(id);
+       if(!optionalUser.isPresent())
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+       return optionalUser.get();
     }
 
     @GetMapping("/username/{username}")

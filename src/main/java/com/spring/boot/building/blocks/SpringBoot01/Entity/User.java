@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "UserEntity")
+@ApiModel(description = "Model to create a new user")
 //@JsonIgnoreProperties({"firstName","lastName"})--Static filtering JsonIgnore
 //@JsonFilter(value = "userFilter")--used for MappingJacksonValue filtering
 public class User extends RepresentationModel<User> {
@@ -21,10 +24,12 @@ public class User extends RepresentationModel<User> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @JsonView(View.External.class)
+    @ApiModelProperty(notes = "userid - Unique identifier of user", required = true, position = 1)
     private Long id;
     @Column(name = "user_name",length = 50,nullable = false,unique = true)
     @NotEmpty(message = "Username is mandatory field. Please enter username")
     @JsonView(View.External.class)
+    @ApiModelProperty(notes = "username- should be flname", example = "obanerjee", required = false,position = 2)
     private String username;
     @Column(name = "first_name",length = 50,nullable = false)
     @Size(min = 2,message = "First name should be atleast 2 characters long")
